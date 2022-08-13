@@ -22,7 +22,4 @@ from course import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('course/', views.get_course),
-    path('attraction', views.attractions),
-    path('restaurant', views.restaurants),
-    path('hotel', views.hotels),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

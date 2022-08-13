@@ -175,7 +175,7 @@ def recommendAttractions(ai, userId, unVisitedAttractions, attractions, areaId, 
     topAttractionIds = [int(pred.iid) for pred in topPredictions]
     topAttractionRatings = [pred.est for pred in topPredictions]
     topAttraction = attractions[(attractions.ID.isin(topAttractionIds)) & (attractions['지역코드'] == areaId)]
-    print(topAttraction)
+    
     
     topAttractionNames = topAttraction['이름']
     topAttractionLats = topAttraction["위도"]
