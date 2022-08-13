@@ -1,8 +1,6 @@
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:allleavetrip/course/map.dart';
+import 'package:allleavetrip/screen/course/tabbar.dart';
+
 import 'package:flutter/material.dart';
-import 'package:allleavetrip/course/tabbar.dart';
 
 class CoursePage extends StatelessWidget {
   const CoursePage({Key? key}) : super(key: key);

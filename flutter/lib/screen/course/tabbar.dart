@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:allleavetrip/course/slidingup_pannel.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import 'course_timeline.dart';

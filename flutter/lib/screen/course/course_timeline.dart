@@ -1,6 +1,10 @@
 import 'package:timeline_tile/timeline_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dash/flutter_dash.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+String BASE_URI = "http://127.0.0.1:8000";
 
 class CourseTimeLine extends StatefulWidget {
   const CourseTimeLine({Key? key}) : super(key: key);
@@ -12,66 +16,107 @@ class CourseTimeLine extends StatefulWidget {
 class _CourseTimeLineState extends State<CourseTimeLine> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            ScrollBar(),
-            TimeLineCourseTitle(
-              alpha: "A",
-              title: "식당",
-            ),
-            TimeLineCourseContent(),
-            TimeLineCourseTitle(
-              alpha: "B",
-              title: "액티비티",
-            ),
-            TimeLineCourseContent(),
-            TimeLineCourseTitle(
-              alpha: "B",
-              title: "액티비티",
-            ),
-            TimeLineCourseContent(),
-            TimeLineCourseTitle(
-              alpha: "B",
-              title: "액티비티",
-            ),
-            TimeLineCourseContent(),
-            TimeLineCourseTitle(
-              alpha: "C",
-              title: "액티비티",
-            ),
-            TimeLineCourseContent(),
-            TimeLineCourseTitle(
-              alpha: "C",
-              title: "액티비티",
-            ),
-            TimeLineCourseContent(),
-            TimeLineCourseTitle(
-              alpha: "C",
-              title: "액티비티",
-            ),
-            TimeLineCourseContent(),
-            TimeLineCourseTitle(
-              alpha: "C",
-              title: "액티비티",
-            ),
-            TimeLineCourseContent(),
-            TimeLineEndTitle(),
-            SizedBox(
-              height: 20,
-            ),
-            TimeLineButton()
-          ],
-        ),
-      ),
-    );
+    return FutureBuilder(
+        future: getCourse(),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          //해당 부분은 data를 아직 받아 오지 못했을때 실행되는 부분을 의미한다.
+          if (snapshot.hasData == false) {
+            return CircularProgressIndicator();
+          }
+          //error가 발생하게 될 경우 반환하게 되는 부분
+          else if (snapshot.hasError) {
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                'Error: ${snapshot.error}',
+                style: TextStyle(fontSize: 15),
+              ),
+            );
+          }
+          // 데이터를 정상적으로 받아오게 되면 다음 부분을 실행하게 되는 것이다.
+          else {
+            return (Container(
+              margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    ScrollBar(),
+                    TimeLineCourseTitle(
+                      alpha: "A",
+                      title: "식당",
+                    ),
+                    TimeLineCourseContent(
+                      title: snapshot.data[0][0]['name'],
+                      address: snapshot.data[0][0]['lat'],
+                      time: snapshot.data[0][0]['time'],
+                      distance: snapshot.data[0][0]['distance'],
+                    ),
+                    TimeLineCourseTitle(
+                      alpha: "B",
+                      title: "액티비티",
+                    ),
+                    TimeLineCourseContent(
+                      title: snapshot.data[0][1]['name'],
+                      address: snapshot.data[0][1]['lat'],
+                      time: snapshot.data[0][1]['time'],
+                      distance: snapshot.data[0][1]['distance'],
+                    ),
+                    TimeLineCourseTitle(
+                      alpha: "B",
+                      title: "액티비티",
+                    ),
+                    TimeLineCourseContent(
+                      title: snapshot.data[0][2]['name'],
+                      address: snapshot.data[0][2]['lat'],
+                      time: snapshot.data[0][2]['time'],
+                      distance: snapshot.data[0][2]['distance'],
+                    ),
+                    TimeLineCourseTitle(
+                      alpha: "A",
+                      title: "식당",
+                    ),
+                    TimeLineCourseContent(
+                      title: snapshot.data[0][3]['name'],
+                      address: snapshot.data[0][3]['lat'],
+                      time: snapshot.data[0][3]['time'],
+                      distance: snapshot.data[0][3]['distance'],
+                    ),
+                    TimeLineCourseTitle(
+                      alpha: "B",
+                      title: "액티비티",
+                    ),
+                    TimeLineCourseContent(
+                      title: snapshot.data[0][4]['name'],
+                      address: snapshot.data[0][4]['lat'],
+                      time: snapshot.data[0][4]['time'],
+                      distance: snapshot.data[0][4]['distance'],
+                    ),
+                    TimeLineEndTitle(),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    TimeLineButton()
+                  ],
+                ),
+              ),
+            ));
+          }
+        });
   }
 }
 
 class TimeLineCourseContent extends StatefulWidget {
-  const TimeLineCourseContent({Key? key}) : super(key: key);
+  const TimeLineCourseContent(
+      {Key? key,
+      required this.title,
+      required this.address,
+      required this.time,
+      required this.distance})
+      : super(key: key);
+  final title;
+  final address;
+  final time;
+  final distance;
 
   @override
   State<TimeLineCourseContent> createState() => _TimeLineCourseContentState();
@@ -113,7 +158,7 @@ class _TimeLineCourseContentState extends State<TimeLineCourseContent> {
                 height: 8,
               ),
               Text(
-                "BISTRO GUSTRO",
+                "${widget.title}",
                 style: TextStyle(
                     fontFamily: 'Pretendard',
                     fontWeight: FontWeight.w600,
@@ -123,7 +168,7 @@ class _TimeLineCourseContentState extends State<TimeLineCourseContent> {
                 height: 3,
               ),
               Text(
-                "경상남도 진주시 진주대로500번길 10",
+                "${widget.address}",
                 style: TextStyle(
                     fontFamily: 'Pretendard',
                     fontWeight: FontWeight.w400,
@@ -134,7 +179,7 @@ class _TimeLineCourseContentState extends State<TimeLineCourseContent> {
                 height: 3,
               ),
               Text(
-                "도보 10분 소요, 0.3KM",
+                "도보 ${widget.time}분 소요, ${widget.distance}KM",
                 style: TextStyle(
                     fontFamily: 'Pretendard',
                     fontWeight: FontWeight.w400,
@@ -282,4 +327,12 @@ class ScrollBar extends StatelessWidget {
       ],
     ));
   }
+}
+
+Future<List> getCourse() async {
+  final url = Uri.parse("$BASE_URI/course?day=1&userId=25&areaCode=3");
+  final res = await http.get(url);
+  final response = utf8.decode(res.bodyBytes);
+
+  return jsonDecode(response);
 }

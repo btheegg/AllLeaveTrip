@@ -1,6 +1,7 @@
-import 'package:allleavetrip/course/course_timeline.dart';
 import 'package:flutter/material.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+
+import 'course_timeline.dart';
 
 class CourseInfoSlididngBar extends StatefulWidget {
   const CourseInfoSlididngBar({Key? key}) : super(key: key);
