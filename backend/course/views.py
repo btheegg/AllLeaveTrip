@@ -40,7 +40,7 @@ def get_course(request):
 
         # 추천 받은 코스의 각 명소에 대한 이름, 위치(위도,경도) 정보
         useTmapInfo = getUseTmapInfo(serializer.data)
-        
+        print(useTmapInfo)
         # 각 경유지 간 소요시간, 거리에 대한 데이터를 구한다
         timeAndDistanceInfo = getTimeAndDistance(useTmapInfo, 33.25217874,126.6231007)
         print(timeAndDistanceInfo)

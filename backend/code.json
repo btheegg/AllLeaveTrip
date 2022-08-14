@@ -1,0 +1,191 @@
+[
+  {
+    "model": "course.Code",
+    "pk": 1,
+    "fields": {
+      "area": "서울"
+    }
+  },
+  {
+    "model": "course.Code",
+    "pk": 2,
+    "fields": {
+      "area": "부산"
+    }
+  },
+  {
+    "model": "course.Code",
+    "pk": 3,
+    "fields": {
+      "area": "인천  "
+    }
+  },
+  {
+    "model": "course.Code",
+    "pk": 4,
+    "fields": {
+      "area": "대구"
+    }
+  },
+  {
+    "model": "course.Code",
+    "pk": 5,
+    "fields": {
+      "area": "대전"
+    }
+  },
+  {
+    "model": "course.Code",
+    "pk": 6,
+    "fields": {
+      "area": "추가예정"
+    }
+  },
+  {
+    "model": "course.Code",
+    "pk": "7",
+    "fields": {
+      "area": "광주"
+    }
+  },
+  {
+    "model": "course.Code",
+    "pk": 8,
+    "fields": {
+      "area": "울산"
+    }
+  },
+  {
+    "model": "course.Code",
+    "pk": 9,
+    "fields": {
+      "area": "제주"
+    }
+  },
+  {
+    "model": "course.Code",
+    "pk": 10,
+    "fields": {
+      "area": "창원"
+    }
+  },
+  {
+    "model": "course.Code",
+    "pk": 11,
+    "fields": {
+      "area": "김해"
+    }
+  },
+  {
+    "model": "course.Code",
+    "pk": 12,
+    "fields": {
+      "area": "양산"
+    }
+  },
+  {
+    "model": "course.Code",
+    "pk": 13,
+    "fields": {
+      "area": "진주"
+    }
+  },
+  {
+    "model": "course.Code",
+    "pk": 14,
+    "fields": {
+      "area": "거제"
+    }
+  },
+  {
+    "model": "course.Code",
+    "pk": 15,
+    "fields": {
+      "area": "통영"
+    }
+  },
+  {
+    "model": "course.Code",
+    "pk": 16,
+    "fields": {
+      "area": "사천"
+    }
+  },
+  {
+    "model": "course.Code",
+    "pk": 17,
+    "fields": {
+      "area": "밀양"
+    }
+  },
+  {
+    "model": "course.Code",
+    "pk": 18,
+    "fields": {
+      "area": "함안"
+    }
+  },
+  {
+    "model": "course.Code",
+    "pk": 19,
+    "fields": {
+      "area": "창녕"
+    }
+  },
+  {
+    "model": "course.Code",
+    "pk": 20,
+    "fields": {
+      "area": "거창"
+    }
+  },
+  {
+    "model": "course.Code",
+    "pk": 21,
+    "fields": {
+      "area": "고성"
+    }
+  },
+  {
+    "model": "course.Code",
+    "pk": 22,
+    "fields": {
+      "area": "합천"
+    }
+  },
+  {
+    "model": "course.Code",
+    "pk": 23,
+    "fields": {
+      "area": "하동"
+    }
+  },
+  {
+    "model": "course.Code",
+    "pk": 24,
+    "fields": {
+      "area": "남해"
+    }
+  },
+  {
+    "model": "course.Code",
+    "pk": 25,
+    "fields": {
+      "area": "함양"
+    }
+  },
+  {
+    "model": "course.Code",
+    "pk": 26,
+    "fields": {
+      "area": "산청"
+    }
+  },
+  {
+    "model": "course.Code",
+    "pk": 27,
+    "fields": {
+      "area": "의령"
+    }
+  }
+]

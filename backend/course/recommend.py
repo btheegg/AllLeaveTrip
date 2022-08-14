@@ -7,8 +7,8 @@ import os
 module_dir = os.path.dirname(__file__)  
 attraction_csv = os.path.join(module_dir, 'csv/관광지.csv')
 attractionRatings_csv = os.path.join(module_dir, 'csv/관광지평점.csv')
-restaurant_csv = os.path.join(module_dir, 'csv/맛집.csv')
-restaurantRatings_csv = os.path.join(module_dir, 'csv/맛집평점.csv')
+restaurant_csv = os.path.join(module_dir, 'csv/식당.csv')
+restaurantRatings_csv = os.path.join(module_dir, 'csv/식당평점.csv')
 hotel_csv = os.path.join(module_dir, 'csv/숙박.csv')
 hotelRatings_csv = os.path.join(module_dir, 'csv/숙박평점.csv')
 
@@ -16,6 +16,7 @@ def get_attractions(day, userId, areaCode):
     
     # 관광지 평점을 불러서, 헤더 없는 데이터프레임으로 저장을 한다.
     df = pd.read_csv(attractionRatings_csv)
+    
     df.to_csv(path_or_buf = "./course/csv/관광지평점_헤더X.csv", index=False, header=False)
     
     # 다시 숙박평점 헤더가 없는 평점 데이터프레임을 불러온다.
@@ -31,10 +32,10 @@ def get_attractions(day, userId, areaCode):
     # 평점과 관광지 데이터프레임을 읽는다.
     ratings = pd.read_csv(attractionRatings_csv)
     attractions = pd.read_csv(attraction_csv)
-    
+    print(attractions)
     # userId에 대해 방문 하지 않은 관광지들을 구한다.
     unVisitedAttractions = getUnvisitedAttractions(ratings, attractions, userId)
-    print(areaCode)
+    print("areacode",areaCode)
     # 지역별로 추천 받는다.
     topAttractionPreds = recommendAttractions(ai, userId, unVisitedAttractions, attractions, areaCode, top=50 * day)
     
@@ -43,7 +44,7 @@ def get_attractions(day, userId, areaCode):
     while len(topAttractionPreds) < 3:
         topAttractionPreds = recommendAttractions(ai, userId, unVisitedAttractions, attractions, areaCode, top=50 * day * searchScale )
         searchScale += 1
-        print(topAttractionPreds)
+        # print(topAttractionPreds)
         
     
     return topAttractionPreds[:5 * day]
@@ -51,10 +52,10 @@ def get_attractions(day, userId, areaCode):
 def get_restaurants(day, userId, areaCode):
     # 관광지 평점을 불러서, 헤더 없는 데이터프레임으로 저장을 한다.
     df = pd.read_csv(restaurantRatings_csv)
-    df.to_csv(path_or_buf = "./course/csv/맛집평점_헤더X.csv", index=False, header=False)
+    df.to_csv(path_or_buf = "./course/csv/식당평점_헤더X.csv", index=False, header=False)
     
     # 다시 숙박평점 헤더가 없는 평점 데이터프레임을 불러온다.
-    restaurantRatings_noh_csv = os.path.join(module_dir, 'csv/맛집평점_헤더X.csv')
+    restaurantRatings_noh_csv = os.path.join(module_dir, 'csv/식당평점_헤더X.csv')
     reader = Reader(line_format='user item rating', sep=',', rating_scale=(0.5,5))
     
     # 전부 학습 데이터를 사용해서, AI에게 학습시킨다.
@@ -174,18 +175,20 @@ def recommendAttractions(ai, userId, unVisitedAttractions, attractions, areaId, 
     # topPredictions에서 itemId, rating, 명소 이름 뽑아내기
     topAttractionIds = [int(pred.iid) for pred in topPredictions]
     topAttractionRatings = [pred.est for pred in topPredictions]
-    topAttraction = attractions[(attractions.ID.isin(topAttractionIds)) & (attractions['지역코드'] == areaId)]
+    topAttraction = attractions[(attractions.ID.isin(topAttractionIds)) & (attractions['지역코드'] == int(areaId))]
     
     
-    topAttractionNames = topAttraction['이름']
+    topAttractionNames = topAttraction['명칭']
     topAttractionLats = topAttraction["위도"]
     topAttractionLngs = topAttraction["경도"]
     topAttractionAreaCodes = topAttraction["지역코드"]
+    topAttractionImages = topAttraction["이미지"]
     
     # 위 3가지를 튜플에 담기
-    topAttractionPreds = [ Course("관광지",areaCode, index,name, rating,lat, lng) 
-                          for index, rating, name, lat, lng, areaCode 
-                          in zip(topAttractionIds, topAttractionRatings, topAttractionNames, topAttractionLats, topAttractionLngs,topAttractionAreaCodes)]
+    topAttractionPreds = [ Course("관광지",areaCode, index,name, image, rating,lat, lng) 
+                          for index, rating, name, lat, lng, areaCode, image 
+                          in zip(topAttractionIds, topAttractionRatings, topAttractionNames, 
+                                 topAttractionLats, topAttractionLngs,topAttractionAreaCodes, topAttractionImages)]
     
     return topAttractionPreds
 
@@ -215,11 +218,12 @@ def recommendRestaurants(ai, userId, unVisitedRestaurants, restaurants, areaId, 
     topRestaurantLats = topRestaurant["위도"]
     topRestaurantLngs = topRestaurant["경도"]
     topRestaurantAreaCodes = topRestaurant["지역코드"]
-    
+    topRestaurantImages = topRestaurant["이미지"]
     # 위 3가지를 튜플에 담기
-    topRestaurantPreds = [ Course("식당",areaCode, index,name, rating,lat, lng) 
-                          for index, rating, name, lat, lng, areaCode 
-                          in zip(topRestaurantIds, topRestaurantRatings, topRestaurantNames, topRestaurantLats, topRestaurantLngs, topRestaurantAreaCodes)]
+    topRestaurantPreds = [ Course("식당",areaCode, index,name, image, rating,lat, lng) 
+                          for index, rating, name, lat, lng, areaCode, image 
+                          in zip(topRestaurantIds, topRestaurantRatings, topRestaurantNames, 
+                                 topRestaurantLats, topRestaurantLngs, topRestaurantAreaCodes, topRestaurantImages)]
     
     return topRestaurantPreds
 
@@ -248,9 +252,11 @@ def recommendHotels(ai, userId, unVisitedHotels, hotels, areaId, top = 10):
     topHotelLats = topHotel["위도"]
     topHotelLngs = topHotel["경도"]
     topHotelAreaCodes = topHotel["지역코드"]
+    topHotelImages = topHotel["이미지"]
     # 위 3가지를 튜플에 담기
-    topHotelPreds = [ Course("호텔",areaCode, index,name, rating,lat, lng) 
-                     for index, rating, name, lat, lng , areaCode
-                     in zip(topHotelIds, topHotelRatings, topHotelNames, topHotelLats, topHotelLngs, topHotelAreaCodes)]
+    topHotelPreds = [ Course("호텔",areaCode, index,name, image, rating,lat, lng) 
+                     for index, rating, name, lat, lng , areaCode, image
+                     in zip(topHotelIds, topHotelRatings, topHotelNames, 
+                            topHotelLats, topHotelLngs, topHotelAreaCodes, topHotelImages)]
     
     return topHotelPreds

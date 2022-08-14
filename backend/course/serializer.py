@@ -3,14 +3,16 @@ from email.policy import default
 from rest_framework import serializers
 
 class Course(object):
-    def __init__(self, code, areaCode, id, name,rating, lat, lng):
+    def __init__(self, code, areaCode, id, name,rating, lat, lng, img):
         self.code = code
         self.areaCode = areaCode
         self.id= id
         self.name = name
+        self.img = img
         self.rating = rating
         self.lat = lat
         self.lng = lng
+        
 
 
     def update(self, instance, validated_data):
@@ -29,6 +31,7 @@ class CourseSerializer(serializers.Serializer):
     lng = serializers.DecimalField(10,7)
     time = serializers.IntegerField(required=False, allow_null=True)
     distance = serializers.IntegerField(required=False, allow_null=True)
+    img = serializers.CharField(max_length=200)
 
 
     class Meta:
