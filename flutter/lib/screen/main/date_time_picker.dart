@@ -1,8 +1,12 @@
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:flutter/material.dart';
 
+typedef void StringCallback(String start, String end);
+
 class DateTimeField extends StatefulWidget {
-  const DateTimeField({Key? key}) : super(key: key);
+  const DateTimeField({Key? key, required this.dateCallback}) : super(key: key);
+
+  final StringCallback dateCallback;
 
   @override
   State<DateTimeField> createState() => DateTimeFieldState();
@@ -43,6 +47,7 @@ class DateTimeFieldState extends State<DateTimeField> {
                         MaterialButton(
                           child: Text("OK"),
                           onPressed: () {
+                            widget.dateCallback(_start, _end);
                             Navigator.pop(context);
                           },
                         ),

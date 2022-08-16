@@ -1,0 +1,48 @@
+version: "3.7"
+services:
+  nginx:
+    image: alt:0.0.2
+    networks:
+      - network
+    volumes:
+      - /home/alt/nginx.conf:/etc/nginx/nginx.conf
+      - static:/data/static
+    ports:
+      - 80:80
+  django_container:
+    image: django_image:2
+    networks:
+      - network
+    volumes:
+      - static:/home/alt/AllLeaveTrip/backend/staticfiles
+    secrets:
+      - DJANGO_SECRET_KEY
+  mysql:
+    image: mysql:5.7.28
+    networks:
+      - network
+    volumes:
+      - database:/var/lib/mysql
+    secrets:
+      - MYSQL_ROOT_PASSWORD
+      - MYSQL_PASSWORD
+    environment:
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/MYSQL_ROOT_PASSWORD
+      MYSQL_DATABASE: altdb
+      MYSQL_USER: altdb
+      MYSQL_PASSWORD_FILE: /run/secrets/MYSQL_PASSWORD
+
+networks:
+  network:
+
+volumes:
+  static:
+  database:
+
+secrets:
+  DJANGO_SECRET_KEY:
+    external: true
+  MYSQL_ROOT_PASSWORD:
+    external: true
+  MYSQL_PASSWORD:
+    external: true

@@ -2,6 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_stars/flutter_rating_stars.dart';
 
 class DetailPage extends StatefulWidget {
+  const DetailPage(
+      {Key? key,
+      required this.img,
+      required this.title,
+      required this.address,
+      required this.contents,
+      required this.code})
+      : super(key: key);
+
+  final String img;
+  final String title;
+  final String address;
+  final String contents;
+  final String code;
+
   @override
   DetailPageState createState() => DetailPageState();
 }
@@ -28,17 +43,34 @@ class DetailPageState extends State<DetailPage>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Container(
-              height: MediaQuery.of(context).size.height / 3,
-              child: Container(
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage("assets/img/1.png"),
-                    fit: BoxFit.cover,
+            Stack(
+              children: [
+                Container(
+                  height: MediaQuery.of(context).size.height / 3,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: NetworkImage(widget.img),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    child: null /* add child content here */,
                   ),
                 ),
-                child: null /* add child content here */,
-              ),
+                Container(
+                  margin: EdgeInsets.fromLTRB(12, 35, 0, 0),
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.arrow_back_ios_new_rounded,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
+              ],
             ),
             DefaultTextStyle(
               style: TextStyle(
@@ -50,12 +82,12 @@ class DetailPageState extends State<DetailPage>
                 child: Column(
                   children: [
                     Text(
-                      "BISTRO GUSTO",
+                      widget.title,
                       style:
                           TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                     ),
                     Text(
-                      "식당",
+                      widget.code,
                       style: TextStyle(fontSize: 12),
                     ),
                     Center(
@@ -90,7 +122,7 @@ class DetailPageState extends State<DetailPage>
                               Icons.pin_drop_outlined,
                               color: const Color(0xff767676),
                             ),
-                            Text("경상남도 진주시 진주대로500번길 10"),
+                            Text(widget.address),
                           ],
                         ))
                   ],
@@ -122,8 +154,7 @@ class DetailPageState extends State<DetailPage>
                   Container(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 24.0, vertical: 21.0),
-                    child: Text(
-                        '오션어드벤처는 로마, 스페인, 베니스 등 유럽의 7개 나라 유명 건축물과 유적지를 배경으로 하여 워터파크를 공간을 구성했다. 각 건축물은 또 하나의 작은 유럽을 만난 듯한 즐거움을 안겨준다. 오션어드벤처는 크게 실내존, 실외존, 야외온천탕으로 구분되며, 남녀노소, 가족, 연인, 친구 등 누구와 언제 오더라도 모두의 취향을 만족 시키기에 충분한 시설과 재미 요소들이 넘쳐난다. 특히 야외온천탕은 다른 어느 워터파크들에 비해 건강과 힐링을 위해 다양하고 특징 있는 컨셉으로 준비되어 있다.'),
+                    child: Text(widget.contents),
                   ),
                   // 리뷰 데이터
                   Container(
