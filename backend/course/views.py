@@ -5,25 +5,34 @@ from course.recommend import get_attractions, get_restaurants, get_hotels
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializer import  Course, CourseSerializer
-
+from rest_framework import exceptions
 from django.shortcuts import render
 from haversine import haversine
+from .models import Code
+from rest_framework import status
+
 
 # Create your views here.
+flag = True
+
 @api_view(['GET'])
 def get_course(request):
     courses = []
-    
+   
     # Query Params
     userId = int(request.GET['userId'])
     day = int(request.GET['day'])
-    areaCode = int(request.GET['areaCode'])
+    areaCode = getAreaCode(request.GET['area'])
+    
     
     # AI를 통해 추천받은 데이터(관광지,식당,호텔)를 가져온다
     attractions = get_attractions(day, userId, areaCode)
     hotels = get_hotels(day, userId, areaCode)
     restaurants = get_restaurants(day, userId, areaCode)
-   
+    
+    if attractions is None or hotels is None or restaurants is None:
+        raise exceptions.NotFound("추천 데이터가 존재하지 않습니다.")
+    
     # 사용자의 여행 날짜(day)에 맞게 AI 추천 코스, 소요 시간/거리를 구한다
     for i in range(day):
         
@@ -40,10 +49,10 @@ def get_course(request):
 
         # 추천 받은 코스의 각 명소에 대한 이름, 위치(위도,경도) 정보
         useTmapInfo = getUseTmapInfo(serializer.data)
-        print(useTmapInfo)
+        
         # 각 경유지 간 소요시간, 거리에 대한 데이터를 구한다
         timeAndDistanceInfo = getTimeAndDistance(useTmapInfo, 33.25217874,126.6231007)
-        print(timeAndDistanceInfo)
+      
         
         
         for index, data in enumerate(serializer.data):
@@ -53,7 +62,14 @@ def get_course(request):
     
     return Response(courses)
 
+def getAreaCode(area):
 
+    areaCode = Code.objects.get(area__contains=area).id
+    
+    return areaCode
+    
+    
+    
 def getUseTmapInfo(course):
     useTmapInfo = []
     
@@ -62,16 +78,18 @@ def getUseTmapInfo(course):
     return useTmapInfo
 
 def getTimeAndDistance(attractions, lat, lng):
+    global flag
     result = []
     user = (lat, lng)
-    print(user)
+    print("attraction", attractions)
     for index, attraction in enumerate(attractions):
         now = (attraction['lat'], attraction['lng'])
         
         # 사용자 위치에 대한 좌표를 입력 받아서, 그 좌표에 대한 거리를 계산한다
-        if index == 0:
+        if index == 0 or flag:
             distance = round(haversine(user, now),2)
             time = distance / 60
+            flag = False
         else:
             distance = round(haversine(last, now),2)
             time = distance / 60

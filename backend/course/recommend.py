@@ -1,8 +1,10 @@
+from re import search
 from surprise import Reader, SVD
 import pandas as pd
 from surprise.dataset import DatasetAutoFolds
 from .serializer import Course, CourseSerializer
 import os
+from rest_framework import exceptions
 
 module_dir = os.path.dirname(__file__)  
 attraction_csv = os.path.join(module_dir, 'csv/관광지.csv')
@@ -32,19 +34,23 @@ def get_attractions(day, userId, areaCode):
     # 평점과 관광지 데이터프레임을 읽는다.
     ratings = pd.read_csv(attractionRatings_csv)
     attractions = pd.read_csv(attraction_csv)
-    print(attractions)
+    
     # userId에 대해 방문 하지 않은 관광지들을 구한다.
     unVisitedAttractions = getUnvisitedAttractions(ratings, attractions, userId)
-    print("areacode",areaCode)
+   
     # 지역별로 추천 받는다.
     topAttractionPreds = recommendAttractions(ai, userId, unVisitedAttractions, attractions, areaCode, top=50 * day)
     
     # 만약에 지역별 데이터가 3개 미만이면, 다시 추천을 받는다.
-    searchScale = 2
+    searchScale = 3
+    tryCount = 0
     while len(topAttractionPreds) < 3:
         topAttractionPreds = recommendAttractions(ai, userId, unVisitedAttractions, attractions, areaCode, top=50 * day * searchScale )
-        searchScale += 1
-        # print(topAttractionPreds)
+        searchScale = searchScale**2
+        if tryCount >= 3:
+            return None
+        
+        tryCount += 1
         
     
     return topAttractionPreds[:5 * day]
@@ -75,8 +81,14 @@ def get_restaurants(day, userId, areaCode):
     topRestaurantPreds = recommendRestaurants(ai, userId, unVisitedRestaurants, restaurants, areaCode, top=50*day)
 
     # 만약에 지역별 데이터가 3개 미만이면, 다시 추천을 받는다.
+    tryCount = 0
+    searchScale = 3
     while len(topRestaurantPreds) < 3:
-        topRestaurantPreds = recommendRestaurants(ai, userId, unVisitedRestaurants, restaurants, areaCode, top=70*day)
+        topRestaurantPreds = recommendRestaurants(ai, userId, unVisitedRestaurants, restaurants, areaCode, top=70*day * searchScale)
+        if tryCount >= 3:
+            return None
+        searchScale = searchScale**2
+        tryCount += 1
         
     return topRestaurantPreds[:3*day]
 
@@ -107,8 +119,15 @@ def get_hotels(day, userId, areaCode):
     topHotelPreds = recommendHotels(ai, userId, unVisitedHotels, hotels, areaCode, top=50*day)
     
      # 만약에 지역별 데이터가 3개 미만이면, 다시 추천을 받는다.
+    tryCount = 0
+    searchScale = 3
     while len(topHotelPreds) < 3:
-        topHotelPreds = recommendHotels(ai, 5, unVisitedHotels, hotels, 2, top=70*day)
+        topHotelPreds = recommendHotels(ai, 5, unVisitedHotels, hotels, 2, top=70*day*searchScale)
+        searchScale  = searchScale ** 2
+        if tryCount >= 3:
+            return None
+        
+        tryCount += 1
         
     
     return topHotelPreds[:3*day]
@@ -182,13 +201,20 @@ def recommendAttractions(ai, userId, unVisitedAttractions, attractions, areaId, 
     topAttractionLats = topAttraction["위도"]
     topAttractionLngs = topAttraction["경도"]
     topAttractionAreaCodes = topAttraction["지역코드"]
-    topAttractionImages = topAttraction["이미지"]
+    topAttractionImages = topAttraction["이미지"] 
+    topAttractionContents = topAttraction["개요"] 
+    topAttractionAddresses = topAttraction["주소"] 
     
     # 위 3가지를 튜플에 담기
-    topAttractionPreds = [ Course("관광지",areaCode, index,name, image, rating,lat, lng) 
-                          for index, rating, name, lat, lng, areaCode, image 
+    topAttractionPreds = [ Course("관광지",areaCode, index,name, 
+                                  image if image != "nan" else "https://cdn.pixabay.com/photo/2022/05/31/00/56/sky-7232494_1280.jpg", 
+                                  content if content != "nan" else "컨텐츠 없음", 
+                                  address if address != "nan" else "주소 없음", 
+                                  rating,lat, lng) 
+                          for index, rating, name, lat, lng, areaCode, image, content, address
                           in zip(topAttractionIds, topAttractionRatings, topAttractionNames, 
-                                 topAttractionLats, topAttractionLngs,topAttractionAreaCodes, topAttractionImages)]
+                                 topAttractionLats, topAttractionLngs,topAttractionAreaCodes, 
+                                 topAttractionImages, topAttractionContents, topAttractionAddresses)]
     
     return topAttractionPreds
 
@@ -218,12 +244,19 @@ def recommendRestaurants(ai, userId, unVisitedRestaurants, restaurants, areaId, 
     topRestaurantLats = topRestaurant["위도"]
     topRestaurantLngs = topRestaurant["경도"]
     topRestaurantAreaCodes = topRestaurant["지역코드"]
-    topRestaurantImages = topRestaurant["이미지"]
+    topRestaurantImages = topRestaurant["이미지"] 
+    topRestaurantContents = topRestaurant["개요"] 
+    topRestaurantAddresses = topRestaurant["주소"] 
+    
     # 위 3가지를 튜플에 담기
-    topRestaurantPreds = [ Course("식당",areaCode, index,name, image, rating,lat, lng) 
-                          for index, rating, name, lat, lng, areaCode, image 
+    topRestaurantPreds = [ Course("식당",areaCode, index,name,                                  
+                                  image if image  != "nan" else "https://cdn.pixabay.com/photo/2022/05/31/00/56/sky-7232494_1280.jpg", 
+                                  content if content != "nan" else "컨텐츠 없음", 
+                                  address if address != "nan" else "주소 없음",  rating,lat, lng) 
+                          for index, rating, name, lat, lng, areaCode, image, content, address 
                           in zip(topRestaurantIds, topRestaurantRatings, topRestaurantNames, 
-                                 topRestaurantLats, topRestaurantLngs, topRestaurantAreaCodes, topRestaurantImages)]
+                                 topRestaurantLats, topRestaurantLngs, topRestaurantAreaCodes, 
+                                 topRestaurantImages, topRestaurantContents, topRestaurantAddresses)]
     
     return topRestaurantPreds
 
@@ -252,11 +285,18 @@ def recommendHotels(ai, userId, unVisitedHotels, hotels, areaId, top = 10):
     topHotelLats = topHotel["위도"]
     topHotelLngs = topHotel["경도"]
     topHotelAreaCodes = topHotel["지역코드"]
-    topHotelImages = topHotel["이미지"]
+    topHotelImages = topHotel["이미지"] 
+    topHotelContents = topHotel["개요"] 
+    topHotelAddresses = topHotel["주소"] 
     # 위 3가지를 튜플에 담기
-    topHotelPreds = [ Course("호텔",areaCode, index,name, image, rating,lat, lng) 
-                     for index, rating, name, lat, lng , areaCode, image
+    topHotelPreds = [ Course("호텔",areaCode, index,name,                                   
+                                  image if image != "nan" else "https://cdn.pixabay.com/photo/2022/05/31/00/56/sky-7232494_1280.jpg", 
+                                  content if content != "nan" else "컨텐츠 없음", 
+                                  address if address != "nan" else "주소 없음", 
+                                  rating,lat, lng) 
+                     for index, rating, name, lat, lng , areaCode, image, content, address
                      in zip(topHotelIds, topHotelRatings, topHotelNames, 
-                            topHotelLats, topHotelLngs, topHotelAreaCodes, topHotelImages)]
+                            topHotelLats, topHotelLngs, topHotelAreaCodes, 
+                            topHotelImages, topHotelContents, topHotelAddresses)]
     
     return topHotelPreds

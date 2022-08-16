@@ -1,107 +1,122 @@
+import 'package:flutter/cupertino.dart';
 import 'package:timeline_tile/timeline_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dash/flutter_dash.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import '../detail_screen.dart';
+import '../main/mainpage.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
 String BASE_URI = "http://127.0.0.1:8000";
 
 class CourseTimeLine extends StatefulWidget {
-  const CourseTimeLine({Key? key}) : super(key: key);
+  const CourseTimeLine(
+      {Key? key,
+      required this.courseData,
+      required this.currentDay,
+      required this.lastDay})
+      : super(key: key);
 
+  final List courseData;
+  final int currentDay;
+  final int lastDay;
   @override
   State<CourseTimeLine> createState() => _CourseTimeLineState();
 }
 
 class _CourseTimeLineState extends State<CourseTimeLine> {
+  _CourseTimeLineState();
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: getCourse(),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          //해당 부분은 data를 아직 받아 오지 못했을때 실행되는 부분을 의미한다.
-          if (snapshot.hasData == false) {
-            return CircularProgressIndicator();
-          }
-          //error가 발생하게 될 경우 반환하게 되는 부분
-          else if (snapshot.hasError) {
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                'Error: ${snapshot.error}',
-                style: TextStyle(fontSize: 15),
-              ),
-            );
-          }
-          // 데이터를 정상적으로 받아오게 되면 다음 부분을 실행하게 되는 것이다.
-          else {
-            return (Container(
-              margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    ScrollBar(),
-                    TimeLineCourseTitle(
-                      alpha: "A",
-                      title: "식당",
-                    ),
-                    TimeLineCourseContent(
-                      title: snapshot.data[0][0]['name'],
-                      address: snapshot.data[0][0]['lat'],
-                      time: snapshot.data[0][0]['time'],
-                      distance: snapshot.data[0][0]['distance'],
-                    ),
-                    TimeLineCourseTitle(
-                      alpha: "B",
-                      title: "액티비티",
-                    ),
-                    TimeLineCourseContent(
-                      title: snapshot.data[0][1]['name'],
-                      address: snapshot.data[0][1]['lat'],
-                      time: snapshot.data[0][1]['time'],
-                      distance: snapshot.data[0][1]['distance'],
-                    ),
-                    TimeLineCourseTitle(
-                      alpha: "B",
-                      title: "액티비티",
-                    ),
-                    TimeLineCourseContent(
-                      title: snapshot.data[0][2]['name'],
-                      address: snapshot.data[0][2]['lat'],
-                      time: snapshot.data[0][2]['time'],
-                      distance: snapshot.data[0][2]['distance'],
-                    ),
-                    TimeLineCourseTitle(
-                      alpha: "A",
-                      title: "식당",
-                    ),
-                    TimeLineCourseContent(
-                      title: snapshot.data[0][3]['name'],
-                      address: snapshot.data[0][3]['lat'],
-                      time: snapshot.data[0][3]['time'],
-                      distance: snapshot.data[0][3]['distance'],
-                    ),
-                    TimeLineCourseTitle(
-                      alpha: "B",
-                      title: "액티비티",
-                    ),
-                    TimeLineCourseContent(
-                      title: snapshot.data[0][4]['name'],
-                      address: snapshot.data[0][4]['lat'],
-                      time: snapshot.data[0][4]['time'],
-                      distance: snapshot.data[0][4]['distance'],
-                    ),
-                    TimeLineEndTitle(),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    TimeLineButton()
-                  ],
-                ),
-              ),
-            ));
-          }
-        });
+    print("${widget.currentDay} 와 ${widget.lastDay}");
+    return Container(
+      margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            ScrollBar(),
+            TimeLineCourseTitle(
+              alpha: "A",
+              title: "식당",
+            ),
+            TimeLineCourseContent(
+              title: widget.courseData[0]['name'],
+              address: widget.courseData[0]['address'],
+              time: widget.courseData[0]['time'],
+              distance: widget.courseData[0]['distance'],
+              img: widget.courseData[0]['img'],
+              code: widget.courseData[0]['code'],
+              contents: widget.courseData[0]['contents'],
+            ),
+            TimeLineCourseTitle(
+              alpha: "B",
+              title: "액티비티",
+            ),
+            TimeLineCourseContent(
+              title: widget.courseData[1]['name'],
+              address: widget.courseData[1]['address'],
+              time: widget.courseData[1]['time'],
+              distance: widget.courseData[1]['distance'],
+              img: widget.courseData[1]['img'],
+              code: widget.courseData[1]['code'],
+              contents: widget.courseData[1]['contents'],
+            ),
+            TimeLineCourseTitle(
+              alpha: "C",
+              title: "액티비티",
+            ),
+            TimeLineCourseContent(
+              title: widget.courseData[2]['name'],
+              address: widget.courseData[2]['address'],
+              time: widget.courseData[2]['time'],
+              distance: widget.courseData[2]['distance'],
+              img: widget.courseData[2]['img'],
+              code: widget.courseData[2]['code'],
+              contents: widget.courseData[2]['contents'],
+            ),
+            TimeLineCourseTitle(
+              alpha: "D",
+              title: "식당",
+            ),
+            TimeLineCourseContent(
+              title: widget.courseData[3]['name'],
+              address: widget.courseData[3]['address'],
+              time: widget.courseData[3]['time'],
+              distance: widget.courseData[3]['distance'],
+              img: widget.courseData[3]['img'],
+              code: widget.courseData[3]['code'],
+              contents: widget.courseData[3]['contents'],
+            ),
+            widget.currentDay == widget.lastDay
+                ? SizedBox.shrink()
+                : TimeLineCourseTitle(
+                    alpha: "E",
+                    title: "호텔",
+                  ),
+            widget.currentDay == widget.lastDay
+                ? SizedBox.shrink()
+                : TimeLineCourseContent(
+                    title: widget.courseData[4]['name'],
+                    address: widget.courseData[4]['address'],
+                    time: widget.courseData[4]['time'],
+                    distance: widget.courseData[4]['distance'],
+                    img: widget.courseData[4]['img'],
+                    code: widget.courseData[4]['code'],
+                    contents: widget.courseData[4]['contents'],
+                  ),
+            TimeLineEndTitle(
+              day: widget.currentDay,
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            TimeLineButton()
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -111,12 +126,18 @@ class TimeLineCourseContent extends StatefulWidget {
       required this.title,
       required this.address,
       required this.time,
-      required this.distance})
+      required this.distance,
+      required this.img,
+      required this.contents,
+      required this.code})
       : super(key: key);
   final title;
   final address;
   final time;
   final distance;
+  final img;
+  final contents;
+  final code;
 
   @override
   State<TimeLineCourseContent> createState() => _TimeLineCourseContentState();
@@ -140,53 +161,66 @@ class _TimeLineCourseContentState extends State<TimeLineCourseContent> {
           SizedBox(
             width: 20,
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 290,
-                height: 120,
-                margin: EdgeInsets.fromLTRB(0, 5, 0, 0),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    image: DecorationImage(
-                        fit: BoxFit.cover,
-                        image: NetworkImage(
-                            "https://mblogthumb-phinf.pstatic.net/MjAxODA1MDJfOTYg/MDAxNTI1MjQ0NjkxNzMx.5gA6AfkafA3mxRYaKwWrlIcz4OrLjKywwopTaKnSRCwg.KNtb49DZ7j1vCY93EWv-b_VVY8mFcZydG7kf3-n9PuMg.JPEG.flyyj1/KakaoTalk_20180430_101156677.jpg?type=w800"))),
-              ),
-              SizedBox(
-                height: 8,
-              ),
-              Text(
-                "${widget.title}",
-                style: TextStyle(
-                    fontFamily: 'Pretendard',
-                    fontWeight: FontWeight.w600,
-                    fontSize: 15),
-              ),
-              SizedBox(
-                height: 3,
-              ),
-              Text(
-                "${widget.address}",
-                style: TextStyle(
-                    fontFamily: 'Pretendard',
-                    fontWeight: FontWeight.w400,
-                    fontSize: 13,
-                    color: Color(0xff767676)),
-              ),
-              SizedBox(
-                height: 3,
-              ),
-              Text(
-                "도보 ${widget.time}분 소요, ${widget.distance}KM",
-                style: TextStyle(
-                    fontFamily: 'Pretendard',
-                    fontWeight: FontWeight.w400,
-                    fontSize: 13,
-                    color: Theme.of(context).primaryColor),
-              ),
-            ],
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => DetailPage(
+                            img: widget.img,
+                            title: widget.title,
+                            code: widget.code,
+                            address: widget.address,
+                            contents: widget.contents,
+                          )));
+            },
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 290,
+                  height: 120,
+                  margin: EdgeInsets.fromLTRB(0, 5, 0, 0),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      image: DecorationImage(
+                          fit: BoxFit.cover,
+                          image: NetworkImage("${widget.img}"))),
+                ),
+                SizedBox(
+                  height: 8,
+                ),
+                Text(
+                  "${widget.title}",
+                  style: TextStyle(
+                      fontFamily: 'Pretendard',
+                      fontWeight: FontWeight.w600,
+                      fontSize: 15),
+                ),
+                SizedBox(
+                  height: 3,
+                ),
+                Text(
+                  "${widget.address}",
+                  style: TextStyle(
+                      fontFamily: 'Pretendard',
+                      fontWeight: FontWeight.w400,
+                      fontSize: 13,
+                      color: Color(0xff767676)),
+                ),
+                SizedBox(
+                  height: 3,
+                ),
+                Text(
+                  "자동차 ${widget.time}분 소요, ${widget.distance}KM",
+                  style: TextStyle(
+                      fontFamily: 'Pretendard',
+                      fontWeight: FontWeight.w400,
+                      fontSize: 13,
+                      color: Theme.of(context).primaryColor),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -245,7 +279,8 @@ class TimeLineCourseTitle extends StatelessWidget {
 }
 
 class TimeLineEndTitle extends StatelessWidget {
-  const TimeLineEndTitle({Key? key}) : super(key: key);
+  const TimeLineEndTitle({Key? key, required this.day}) : super(key: key);
+  final int day;
 
   @override
   Widget build(BuildContext context) {
@@ -267,7 +302,7 @@ class TimeLineEndTitle extends StatelessWidget {
           )),
         ),
         Text(
-          "1일차 종료",
+          "$day일차 종료",
           style: TextStyle(
               fontFamily: 'Pretendard',
               fontWeight: FontWeight.w500,
@@ -287,7 +322,11 @@ class TimeLineButton extends StatelessWidget {
       width: double.infinity,
       height: 50,
       child: (ElevatedButton(
-        onPressed: () {},
+        onPressed: () {
+          showDialog(
+              context: context,
+              builder: (BuildContextcontext) => CustomDialog());
+        },
         style: ElevatedButton.styleFrom(
             primary: Theme.of(context).primaryColor,
             shape: RoundedRectangleBorder(
@@ -329,10 +368,50 @@ class ScrollBar extends StatelessWidget {
   }
 }
 
-Future<List> getCourse() async {
-  final url = Uri.parse("$BASE_URI/course?day=1&userId=25&areaCode=3");
-  final res = await http.get(url);
-  final response = utf8.decode(res.bodyBytes);
+class CustomDialog extends StatelessWidget {
+  const CustomDialog({Key? key}) : super(key: key);
 
-  return jsonDecode(response);
+  @override
+  Widget build(BuildContext context) {
+    return (CupertinoAlertDialog(
+      title: Text("코스 확정"),
+      content: const Text('해당 코스로 코스 확정을 하시겠습니까?'),
+      actions: <Widget>[
+        CupertinoDialogAction(
+          child: Text(
+            "아니요",
+            style: TextStyle(color: Colors.red),
+          ),
+          onPressed: (() {
+            Navigator.pop(context);
+          }),
+        ),
+        CupertinoDialogAction(
+          child: Text(
+            "확정하기",
+            style: TextStyle(color: Colors.blue),
+          ),
+          onPressed: () {
+            showToast("코스가 확정되었습니다.");
+            Navigator.pop(context);
+            // //첫 페이지 위젯으로 이동하면서 연결된 모든 위젯을 트리에서 삭제
+            // Navigator.pushAndRemoveUntil(
+            //     context,
+            //     MaterialPageRoute(
+            //         builder: (BuildContext context) => MainPage()),
+            //     (route) => false);
+          },
+        ),
+      ],
+    ));
+  }
+}
+
+void showToast(String message) {
+  Fluttertoast.showToast(
+      msg: message,
+      backgroundColor: Colors.white,
+      textColor: Colors.black,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM);
 }

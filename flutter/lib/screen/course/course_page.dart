@@ -3,7 +3,10 @@ import 'package:allleavetrip/screen/course/tabbar.dart';
 import 'package:flutter/material.dart';
 
 class CoursePage extends StatelessWidget {
-  const CoursePage({Key? key}) : super(key: key);
+  const CoursePage({Key? key, required this.area, required this.day})
+      : super(key: key);
+  final String area;
+  final int day;
 
   @override
   Widget build(BuildContext context) {
@@ -20,17 +23,22 @@ class CoursePage extends StatelessWidget {
                   fontSize: 20,
                   color: Colors.black),
             ),
-            leading: const IconButton(
+            leading: IconButton(
               icon: Icon(
                 Icons.arrow_back_ios_new_rounded,
                 color: Colors.black,
               ),
-              onPressed: null,
+              onPressed: () {
+                Navigator.pop(context);
+              },
             ),
             backgroundColor: Colors.white,
             elevation: 0,
           ),
-          body: const CustomTabBar(),
+          body: CustomTabBar(
+            area: area,
+            day: day,
+          ),
         ));
   }
 }
