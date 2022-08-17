@@ -29,7 +29,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': "altdb",
         'USER': "altdb",
-        'PASSWORD': read_secret('MYSQL_PASSWORD'),
+        'PASSWORD': 1234,
         'HOST': 'mysql',
         'PORT': '3306',
     }
