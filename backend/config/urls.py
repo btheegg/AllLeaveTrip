@@ -21,6 +21,6 @@ from course import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('course/', views.get_course),
+    path('api/course/', views.get_course),
     path('code', views.getAreaCode),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
