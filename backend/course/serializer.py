@@ -15,10 +15,9 @@ class Course(object):
         self.lat = lat
         self.lng = lng
         
-
     def update(self, instance, validated_data):
-        instance.time = validated_data.get('time', instance.time)
-        instance.save()
+        self.instance.time = validated_data.get('time', instance.time)
+        self.instance.save()
         return instance
 
 class CourseSerializer(serializers.Serializer):
