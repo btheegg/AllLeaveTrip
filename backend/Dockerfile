@@ -11,12 +11,12 @@ RUN chmod 600 /root/.ssh/id_rsa
 RUN touch /root/.ssh/known_hosts
 RUN ssh-keyscan github.com >> /root/.ssh/known_hosts
 
-WORKDIR /home/alt/
+WORKDIR /home/brain/
 
 RUN echo "test21"
 
 # release/0.1 branch 로부터 깃 클론을 진행해준당
-RUN git clone -b release/0.3 --single-branch git@github.com:alt-comapny/AllLeaveTrip.git
+RUN git clone -b release/0.4 --single-branch git@github.com:alt-comapny/AllLeaveTrip.git
 
 WORKDIR /home/alt/AllLeaveTrip/backend
 
