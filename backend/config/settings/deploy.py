@@ -12,7 +12,7 @@ def read_secret(secret_name):
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = read_secret('DJANGO_SECRET_KEY')
+SECRET_KEY = 'django-insecure-yp1&^4cag9sc)34y0i+os*!+%0bi=n+%acu4v2+t)7^cl!_may'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -28,7 +28,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': "altdb",
         'USER': "altdb",
-        'PASSWORD': read_secret('MYSQL_PASSWORD'),
+        'PASSWORD': 1234,
         'HOST': 'mysql',
         'PORT': '3306',
     }
