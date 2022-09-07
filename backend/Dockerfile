@@ -18,7 +18,7 @@ RUN echo "test21"
 # release/0.1 branch 로부터 깃 클론을 진행해준당
 RUN git clone -b release/0.4 --single-branch git@github.com:alt-comapny/AllLeaveTrip.git
 
-WORKDIR /home/alt/AllLeaveTrip/backend
+WORKDIR /home/brain/AllLeaveTrip/backend
 
 RUN pip install -r requirements.txt
 
