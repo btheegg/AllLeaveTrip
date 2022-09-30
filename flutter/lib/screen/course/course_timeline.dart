@@ -9,7 +9,7 @@ import '../detail_screen.dart';
 import '../main/mainpage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-String BASE_URI = "http://127.0.0.1:8000";
+String BASE_URI = "http://203.255.3.66:3091";
 
 class CourseTimeLine extends StatefulWidget {
   const CourseTimeLine(

@@ -6,7 +6,7 @@ import 'map.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-String BASE_URI = "http://127.0.0.1:8000";
+String BASE_URI = "http://203.255.3.66:3091";
 bool visibility = true;
 
 class CustomTabBar extends StatefulWidget {
